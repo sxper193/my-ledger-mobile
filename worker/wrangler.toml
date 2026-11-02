@@ -1,0 +1,9 @@
+name = "my-ledger-notion-api"
+main = "index.mjs"
+compatibility_date = "2026-08-01"
+
+[vars]
+# The data source ID of the Notion ledger database; not an API token.
+NOTION_DATA_SOURCE_ID = "8c953962-975d-4997-9471-155f525d7e43"
+# GitHub Pages origin, without trailing slash. If you choose a custom domain, replace this.
+ALLOWED_ORIGIN = "https://sxper193.github.io"
