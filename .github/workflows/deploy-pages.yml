@@ -30,7 +30,8 @@ jobs:
       - name: Prepare public site
         run: |
           mkdir -p _site/assets
-          cp index.html app.js styles.css sw.js manifest.webmanifest .nojekyll _site/
+          node analytics.test.cjs
+          cp index.html app.js analytics.js styles.css sw.js manifest.webmanifest .nojekyll _site/
           cp assets/icon.svg _site/assets/
 
       - name: Upload website
