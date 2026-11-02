@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');const A=require('./analytics.js');
+const f={period:'month',anchor:'2026-11-02',min:'',max:'',type:'支出'};
+let r=A.ranges(f,'2026-11-02');assert.deepEqual(r.current,['2026-11-01','2026-11-02']);assert.deepEqual(r.previous,['2026-10-01','2026-10-02']);assert.deepEqual(r.year,['2025-11-01','2025-11-02']);
+r=A.ranges({...f,anchor:'2024-03-31'},'2024-03-31');assert.deepEqual(r.previous,['2024-02-01','2024-02-29']);
+r=A.ranges({...f,period:'quarter',anchor:'2026-01-02'},'2026-01-02');assert.deepEqual(r.previous,['2025-10-01','2025-10-02']);assert.deepEqual(r.year,['2025-01-01','2025-01-02']);
+r=A.ranges({...f,period:'week',anchor:'2026-01-01'},'2026-01-01');assert.deepEqual(r.current,['2025-12-29','2026-01-01']);assert.equal(A.days(...r.previous),4);assert.equal(new Date(r.year[0]).getUTCDay(),1);
+r=A.ranges({...f,period:'custom',from:'2024-02-29',to:'2024-03-01'},'2026-11-02');assert.deepEqual(r.year,['2023-02-28','2023-03-01']);assert.equal(A.days(...r.previous),2);
+assert(A.ranges({...f,period:'custom',from:'2026-02-30',to:'2026-03-01'},'2026-11-02').error);
+assert(A.ranges({...f,period:'custom',from:'2020-01-01',to:'2026-03-01'},'2026-11-02').error);
+const rows=[{name:'话费',amount:.1,type:'支出',date:'2026-11-02',cat1:'生活',cat2:'通讯',cat3:'话费',merchant:'移动'}, {name:'话费二',amount:.2,type:'支出',date:'2026-11-01',cat1:'生活',cat2:'通讯',cat3:'话费'}, {name:'工资',amount:100,type:'收入',date:'2026-11-02',cat1:'收入'}];
+assert.equal(A.sum(rows.slice(0,2)),.3);assert.equal(A.select(rows,{...f,cat1:'生活',cat2:'通讯',cat3:'话费',min:'0.15'},['2026-11-01','2026-11-02']).length,1);assert.equal(A.select(rows,{...f,weekday:'0'},['2026-11-01','2026-11-02']).length,1);assert.equal(A.select(rows,{...f,merchant:'未分类'},['2026-11-01','2026-11-02']).length,1);assert.equal(A.group(rows,'cat1').length,2);assert.equal(A.delta(1,0),'基期为 0');assert.equal(A.delta(0,0),'持平');assert.equal(A.delta(120,100),'+20.0%');assert.equal(A.metrics([],['2026-01-01','2026-01-31']).average,0);
+console.log('Calendar, partial periods, leap year, filters, cents and zero-baseline checks passed.');
